@@ -18,12 +18,14 @@ runs:
 
   steps:
     - name: Download CLI (unix)
+      shell: bash
       if: runner.os == 'Linux' || runner.os == 'macOS'
       run: |
         curl https://cdn.crabnebula.app/asset/${{ fromJson('{ "Linux": "01HKNKYBKNQWZT5A89CT9GDZXX", "macOS": "01HKNKYECKV6TX1XD40AF67X7N" }')[runner.os] }} --output cn
         chmod +x cn
 
     - name: Download CLI (Windows)
+      shell: bash
       if: runner.os == 'Windows'
       run: |
         curl https://cdn.crabnebula.app/asset/01HKNKYGPMY5BT70R952AKX33A --output cn
