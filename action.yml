@@ -1,0 +1,57 @@
+name: 'cn-cloud-release'
+description: 'CrabNebula Cloud Release GitHub Action'
+inputs:
+  version:
+    description: 'Specify the version of your release'
+    required: true
+  slug:
+    description: 'Specify the corresponding slug for your release'
+    required: true
+  asset-path:
+    description: 'Specify the path to your asset'
+    required: true
+  platform:
+    description: 'Specify the platform of your asset'
+    required: true
+  signature-path:
+    description: 'Specify the path to your signature-file'
+    required: true
+  api-key:
+    description: 'API key with write permissions for CrabNebula Cloud'
+    required: true
+runs:
+  using: 'composite'
+
+  steps:
+    - name: "Init Cloud CLI"
+      shell: bash
+      run: |
+        curl -L https://cdn.crabnebula.app/asset/01HKPXPH4C5DBHEYYWTA9H1SEQ -o cn
+        chmod +x cn
+
+    - name: "Create Draft Release"
+      shell: bash
+      env:
+        CN_API_KEY: ${{ inputs.api-key }}
+      run: |
+        echo "Creating draft release"
+        DRAFT_OUTPUT=$(./cn release draft ${{ inputs.slug }} ${{ inputs.version }})
+        echo "Draft output: $DRAFT_OUTPUT"
+        RELEASE_ID=$(echo $DRAFT_OUTPUT | sed -n 's/.*"id": "\([^"]*\)".*/\1/p')
+        echo "Release ID: $RELEASE_ID"
+
+    - name: "Upload Asset"
+      shell: bash
+      env:
+        CN_API_KEY: ${{ inputs.api-key }}
+      run: |
+        echo "Uploading Asset"
+        ./cn release upload ${{ inputs.slug }} $RELEASE_ID --update-platform ${{ inputs.platform }} --file ${{ inputs.asset-path }} --signature ${{ inputs.signature-path }}
+
+    - name: "Publish Release"
+      shell: bash
+      env:
+        CN_API_KEY: ${{ inputs.api-key }}
+      run: |
+        echo "Publishing Release"
+        ./cn release publish ${{ inputs.slug }} $RELEASE_ID
