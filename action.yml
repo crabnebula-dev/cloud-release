@@ -37,8 +37,7 @@ runs:
         CN_API_KEY: ${{ inputs.api-key }}
       run: |
         OUTPUT=$(./cn ${{ inputs.command }})
-        echo "::group::Setting outputs"
         echo "stdout<<nEOFn" >> $GITHUB_OUTPUT
         echo "$OUTPUT" >> $GITHUB_OUTPUT
         echo "nEOFn" >> $GITHUB_OUTPUT
-        echo "::endgroup::"
+
