@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: create draft release
-        uses: ./
+        uses: crabnebula-dev/cloud-release
         id: draft
         with:
           command: release draft ${{ secrets.CN_APP_ID }} 0.1.0
