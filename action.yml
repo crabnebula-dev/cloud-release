@@ -21,14 +21,14 @@ runs:
       shell: bash
       if: runner.os == 'Linux' || runner.os == 'macOS'
       run: |
-        curl https://cdn.crabnebula.app/asset/${{ fromJson('{ "Linux": "01HKNKYBKNQWZT5A89CT9GDZXX", "macOS": "01HKNKYECKV6TX1XD40AF67X7N" }')[runner.os] }} --output cn
+        curl -L https://cdn.crabnebula.app/download/01HKMY6ZXJA3P0QHA5GQY8KKRT/latest/cn_${{ runner.os == 'Linux' && 'linux' || 'macos' }} --output cn
         chmod +x cn
 
     - name: Download CLI (Windows)
       shell: bash
       if: runner.os == 'Windows'
       run: |
-        curl https://cdn.crabnebula.app/asset/01HKNKYGPMY5BT70R952AKX33A --output cn
+        curl -L https://cdn.crabnebula.app/download/01HKMY6ZXJA3P0QHA5GQY8KKRT/latest/cn_windows.exe --output cn
 
     - name: "Run Command"
       id: run-command
