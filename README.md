@@ -30,3 +30,7 @@ jobs:
           command: release draft ${{ secrets.CN_APP_ID }} 0.1.0
           api-key: ${{ secrets.CN_API_KEY }}
 ```
+
+## Licenses
+
+MIT or MIT/Apache 2.0 where applicable.
