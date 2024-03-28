@@ -2,6 +2,8 @@
 
 This action wraps the CrabNebula Cloud CLI to be used as a GitHub Action.
 
+The documentation for the CrabNebula Cloud can be found [here](https://docs.crabnebula.dev/). It includes information on [how to install the CLI](https://docs.crabnebula.dev/cloud/cli/) and how to use it as well as [example workflows](https://docs.crabnebula.dev/cloud/continuous-integration/) for this action.
+
 ## Example
 
 ```yml
