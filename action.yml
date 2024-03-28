@@ -7,6 +7,10 @@ inputs:
   api-key:
     description: 'API key with write permissions for CrabNebula Cloud'
     required: true
+  path:
+    description: 'Optional path to run the CLI in, needs to be a valid directory path (Unix syntax)'
+    required: false
+    default: '.'
 
 outputs:
   stdout:
@@ -15,12 +19,12 @@ outputs:
 
 runs:
   using: 'composite'
-
   steps:
     - name: Download CLI (unix)
       shell: bash
       if: runner.os == 'Linux' || runner.os == 'macOS'
       run: |
+        cd ${{ inputs.path }}
         curl -L https://cdn.crabnebula.app/download/01HKMY6ZXJA3P0QHA5GQY8KKRT/latest/cn_${{ runner.os == 'Linux' && 'linux' || 'macos' }} --output cn
         chmod +x cn
 
@@ -28,6 +32,7 @@ runs:
       shell: bash
       if: runner.os == 'Windows'
       run: |
+        cd ${{ inputs.path }}
         curl -L https://cdn.crabnebula.app/download/01HKMY6ZXJA3P0QHA5GQY8KKRT/latest/cn_windows.exe --output cn
 
     - name: "Run Command"
@@ -36,6 +41,7 @@ runs:
       env:
         CN_API_KEY: ${{ inputs.api-key }}
       run: |
+        cd ${{ inputs.path }}
         OUTPUT=$(./cn ${{ inputs.command }})
         echo "stdout<<nEOFn" >> $GITHUB_OUTPUT
         echo "$OUTPUT" >> $GITHUB_OUTPUT
