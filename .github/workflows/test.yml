@@ -2,26 +2,10 @@ name: Test Action
 
 on:
   workflow_dispatch:
-    inputs:
-      api-key:
-        type: string
-        description: Cloud API key
-        required: true
-      cn-env:
-        description: Cloud environment
-        default: qa
-        type: choice
-        options:
-          - qa
-          - production
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
-env:
-  CN_API_KEY: ${{ inputs.api-key }}
-  CN_ENV: ${{ inputs.cn-env }}
 
 jobs:
   draft:
@@ -35,12 +19,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: whoami
+      - name: get CLI version
         uses: ./
-        id: whoami
+        id: version
         with:
-          command: whoami
-          api-key: ${{ env.CN_API_KEY }}
+          command: --version
 
       - name: echo outputs
-        run: echo '${{ steps.whoami.outputs.stdout }}'
+        run: echo '${{ steps.version.outputs.stdout }}'
