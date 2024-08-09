@@ -11,6 +11,10 @@ inputs:
     description: 'Optional path to a directory where the CLI should be downloaded, needs to be a valid path (Unix syntax)'
     required: false
     default: '.'
+  working-directory:
+    description: 'Current working directory to use when running the CLI'
+    required: false
+    default: '.'
 
 outputs:
   stdout:
@@ -23,9 +27,9 @@ runs:
     - name: Download CLI (Linux)
       shell: bash
       if: runner.os == 'Linux'
+      working-directory: ${{ inputs.path }}
       run: |
         : Download CLI
-        cd ${{ inputs.path }}
         ARCH=$(uname -m)
         echo "Downloading CLI for $ARCH..."
         if [[ "$ARCH" == "x86_64" ]]; then
@@ -59,11 +63,11 @@ runs:
       shell: bash
       env:
         CN_API_KEY: ${{ inputs.api-key }}
-      working-directory: ${{ inputs.path }}
+      working-directory: ${{ inputs.working-directory }}
       run: |
         : cn ${{ inputs.command }}
         exec 5>&1
-        OUTPUT=$(./cn ${{ inputs.command }} | tee >(cat - >&5))
+        OUTPUT=$(./"${{ inputs.path }}"/cn ${{ inputs.command }} | tee >(cat - >&5))
         echo "stdout<<nEOFn" >> $GITHUB_OUTPUT
         echo "$OUTPUT" >> $GITHUB_OUTPUT
         echo "nEOFn" >> $GITHUB_OUTPUT
