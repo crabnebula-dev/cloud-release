@@ -24,7 +24,6 @@ runs:
       shell: bash
       if: runner.os == 'Linux'
       run: |
-        # step title until https://github.com/actions/runner/issues/1877 lands
         : Download CLI
         cd ${{ inputs.path }}
         ARCH=$(uname -m)
@@ -41,7 +40,6 @@ runs:
       if: runner.os == 'macOS'
       working-directory: ${{ inputs.path }}
       run: |
-        # step title until https://github.com/actions/runner/issues/1877 lands
         : Download CLI
         echo "Downloading CLI..."
         curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/darwin-binary-universal --output cn
@@ -52,7 +50,6 @@ runs:
       if: runner.os == 'Windows'
       working-directory: ${{ inputs.path }}
       run: |
-        # step title until https://github.com/actions/runner/issues/1877 lands
         : Download CLI
         echo "Downloading CLI..."
         curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/windows-binary-x86_64 --output cn
@@ -64,7 +61,6 @@ runs:
         CN_API_KEY: ${{ inputs.api-key }}
       working-directory: ${{ inputs.path }}
       run: |
-        # step title until https://github.com/actions/runner/issues/1877 lands
         : cn ${{ inputs.command }}
         exec 5>&1
         OUTPUT=$(./cn ${{ inputs.command }} | tee >(cat - >&5))
