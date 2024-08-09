@@ -25,15 +25,15 @@ runs:
   using: 'composite'
   steps:
     - name: Cache CLI
-      id: cache-cn-cli
-      uses: actions/cache@v4
+      id: restore-cache
+      uses: actions/cache/restore@v4
       with:
         path: ${{ inputs.path }}/cn
-        key: ${{ runner.os }}-${{ runner.arch }}-cn-cli
+        key: ${{ runner.os }}-${{ runner.arch }}-cn
 
     - name: Download CLI (Linux)
       shell: bash
-      if: steps.cache-cn-cli.outputs.cache-hit != 'true' && runner.os == 'Linux'
+      if: steps.restore-cache.outputs.cache-hit != 'true' && runner.os == 'Linux'
       working-directory: ${{ inputs.path }}
       run: |
         : Download CLI
@@ -47,7 +47,7 @@ runs:
 
     - name: Download CLI (macOS)
       shell: bash
-      if: steps.cache-cn-cli.outputs.cache-hit != 'true' && runner.os == 'macOS'
+      if: steps.restore-cache.outputs.cache-hit != 'true' && runner.os == 'macOS'
       working-directory: ${{ inputs.path }}
       run: |
         : Download CLI
@@ -57,12 +57,17 @@ runs:
 
     - name: Download CLI (Windows)
       shell: bash
-      if: steps.cache-cn-cli.outputs.cache-hit != 'true' && runner.os == 'Windows'
+      if: steps.restore-cache.outputs.cache-hit != 'true' && runner.os == 'Windows'
       working-directory: ${{ inputs.path }}
       run: |
         : Download CLI
         echo "Downloading CLI..."
         curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/windows-binary-x86_64 --output cn
+
+    - uses: actions/cache/save@v4
+      with:
+        path: ${{ inputs.path }}/cn
+        key: ${{ steps.restore-cache.outputs.cache-primary-key }}
 
     - name: "Run Command"
       id: run-command
