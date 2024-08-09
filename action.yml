@@ -24,15 +24,21 @@ outputs:
 runs:
   using: 'composite'
   steps:
+    - name: Cache CLI
+      id: cache-cn-cli
+      uses: actions/cache@v4
+      with:
+        path: ${{ inputs.path }}/cn
+        key: ${{ runner.os }}-${{ runner.arch }}-cn-cli
+
     - name: Download CLI (Linux)
       shell: bash
-      if: runner.os == 'Linux'
+      if: steps.cache-cn-cli.outputs.cache-hit != 'true' && runner.os == 'Linux'
       working-directory: ${{ inputs.path }}
       run: |
         : Download CLI
-        ARCH=$(uname -m)
-        echo "Downloading CLI for $ARCH..."
-        if [[ "$ARCH" == "x86_64" ]]; then
+        echo "Downloading CLI..."
+        if [[ "${{ runner.arch }}" == "X64" ]]; then
           curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/linux-binary-x86_64 --output cn
         else
           curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/linux-binary-aarch64 --output cn
@@ -41,7 +47,7 @@ runs:
 
     - name: Download CLI (macOS)
       shell: bash
-      if: runner.os == 'macOS'
+      if: steps.cache-cn-cli.outputs.cache-hit != 'true' && runner.os == 'macOS'
       working-directory: ${{ inputs.path }}
       run: |
         : Download CLI
@@ -51,7 +57,7 @@ runs:
 
     - name: Download CLI (Windows)
       shell: bash
-      if: runner.os == 'Windows'
+      if: steps.cache-cn-cli.outputs.cache-hit != 'true' && runner.os == 'Windows'
       working-directory: ${{ inputs.path }}
       run: |
         : Download CLI

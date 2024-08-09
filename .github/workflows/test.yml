@@ -32,3 +32,8 @@ jobs:
 
       - name: echo outputs
         run: echo '${{ steps.version.outputs.stdout }}'
+
+      - name: get CLI version (cached)
+        uses: ./
+        with:
+          command: --version
