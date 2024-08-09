@@ -8,7 +8,11 @@ inputs:
     description: 'API key with write permissions for CrabNebula Cloud'
     required: true
   path:
-    description: 'Optional path to run the CLI in, needs to be a valid directory path (Unix syntax)'
+    description: 'Optional path to a directory where the CLI should be downloaded, needs to be a valid path (Unix syntax)'
+    required: false
+    default: '.'
+  working-directory:
+    description: 'Current working directory to use when running the CLI'
     required: false
     default: '.'
 
@@ -20,30 +24,61 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: Download CLI (unix)
+    - name: Cache CLI
+      id: restore-cache
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ inputs.path }}/cn
+        key: ${{ runner.os }}-${{ runner.arch }}-cn
+
+    - name: Download CLI (Linux)
       shell: bash
-      if: runner.os == 'Linux' || runner.os == 'macOS'
+      if: steps.restore-cache.outputs.cache-hit != 'true' && runner.os == 'Linux'
+      working-directory: ${{ inputs.path }}
       run: |
-        cd ${{ inputs.path }}
-        curl -L https://cdn.crabnebula.app/download/01HKMY6ZXJA3P0QHA5GQY8KKRT/latest/cn_${{ runner.os == 'Linux' && 'linux' || 'macos' }} --output cn
+        : Download CLI
+        echo "Downloading CLI..."
+        if [[ "${{ runner.arch }}" == "X64" ]]; then
+          curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/linux-binary-x86_64 --output cn
+        else
+          curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/linux-binary-aarch64 --output cn
+        fi
+        chmod +x cn
+
+    - name: Download CLI (macOS)
+      shell: bash
+      if: steps.restore-cache.outputs.cache-hit != 'true' && runner.os == 'macOS'
+      working-directory: ${{ inputs.path }}
+      run: |
+        : Download CLI
+        echo "Downloading CLI..."
+        curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/darwin-binary-universal --output cn
         chmod +x cn
 
     - name: Download CLI (Windows)
       shell: bash
-      if: runner.os == 'Windows'
+      if: steps.restore-cache.outputs.cache-hit != 'true' && runner.os == 'Windows'
+      working-directory: ${{ inputs.path }}
       run: |
-        cd ${{ inputs.path }}
-        curl -L https://cdn.crabnebula.app/download/01HKMY6ZXJA3P0QHA5GQY8KKRT/latest/cn_windows.exe --output cn
+        : Download CLI
+        echo "Downloading CLI..."
+        curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/windows-binary-x86_64 --output cn
+
+    - uses: actions/cache/save@v4
+      with:
+        path: ${{ inputs.path }}/cn
+        key: ${{ steps.restore-cache.outputs.cache-primary-key }}
 
     - name: "Run Command"
       id: run-command
       shell: bash
       env:
         CN_API_KEY: ${{ inputs.api-key }}
+      working-directory: ${{ inputs.working-directory }}
       run: |
-        cd ${{ inputs.path }}
-        OUTPUT=$(./cn ${{ inputs.command }})
+        : cn ${{ inputs.command }}
+        exec 5>&1
+        OUTPUT=$(./"${{ inputs.path }}"/cn ${{ inputs.command }} | tee >(cat - >&5))
         echo "stdout<<nEOFn" >> $GITHUB_OUTPUT
         echo "$OUTPUT" >> $GITHUB_OUTPUT
         echo "nEOFn" >> $GITHUB_OUTPUT
-

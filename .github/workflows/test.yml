@@ -1,32 +1,16 @@
 name: Test Action
 
 on:
-  workflow_dispatch:
-    inputs:
-      api-key:
-        type: string
-        description: Cloud API key
-        required: true
-      app-id:
-        type: string
-        description: Cloud application ID
-        required: true
-      cn-env:
-        description: Cloud environment
-        default: qa
-        type: choice
-        options:
-          - qa
-          - production
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/test.yml"
+      - "action.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
-env:
-  CN_API_KEY: ${{ inputs.api-key }}
-  CN_APP_ID: ${{ inputs.app-id }}
-  CN_ENV: ${{ inputs.cn-env }}
 
 jobs:
   draft:
@@ -40,12 +24,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: create draft release
+      - name: get CLI version
         uses: ./
-        id: draft
+        id: version
         with:
-          command: release draft ${{ env.CN_APP_ID }} 0.1.0
-          api-key: ${{ env.CN_API_KEY }}
+          command: --version
 
       - name: echo outputs
-        run: echo '${{ steps.draft.outputs.stdout }}'
+        run: echo '${{ steps.version.outputs.stdout }}'
+
+      - name: get CLI version (cached)
+        uses: ./
+        with:
+          command: --version
