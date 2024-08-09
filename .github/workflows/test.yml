@@ -39,7 +39,7 @@ jobs:
         uses: ./
         id: whoami
         with:
-          command: release whoami
+          command: whoami
           api-key: ${{ env.CN_API_KEY }}
 
       - name: echo outputs
