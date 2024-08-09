@@ -8,7 +8,7 @@ inputs:
     description: 'API key with write permissions for CrabNebula Cloud'
     required: true
   path:
-    description: 'Optional path to run the CLI in, needs to be a valid directory path (Unix syntax)'
+    description: 'Optional path to a directory where the CLI should be downloaded, needs to be a valid path (Unix syntax)'
     required: false
     default: '.'
 
@@ -20,12 +20,25 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: Download CLI (unix)
+    - name: Download CLI (Linux)
       shell: bash
-      if: runner.os == 'Linux' || runner.os == 'macOS'
+      if: runner.os == 'Linux'
       run: |
         cd ${{ inputs.path }}
-        curl -L https://cdn.crabnebula.app/download/01HKMY6ZXJA3P0QHA5GQY8KKRT/latest/cn_${{ runner.os == 'Linux' && 'linux' || 'macos' }} --output cn
+        ARCH=$(uname -m)
+        if [[ "$ARCH" == "x86_64" ]]; then
+          curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/linux-binary-x86_64 --output cn
+        else
+          curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/linux-binary-aarch64 --output cn
+        fi
+        chmod +x cn
+
+    - name: Download CLI (macOS)
+      shell: bash
+      if: runner.os == 'macOS'
+      run: |
+        cd ${{ inputs.path }}
+        curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/darwin-binary-universal --output cn
         chmod +x cn
 
     - name: Download CLI (Windows)
@@ -33,7 +46,7 @@ runs:
       if: runner.os == 'Windows'
       run: |
         cd ${{ inputs.path }}
-        curl -L https://cdn.crabnebula.app/download/01HKMY6ZXJA3P0QHA5GQY8KKRT/latest/cn_windows.exe --output cn
+        curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/windows-binary-x86_64 --output cn
 
     - name: "Run Command"
       id: run-command
@@ -42,8 +55,8 @@ runs:
         CN_API_KEY: ${{ inputs.api-key }}
       run: |
         cd ${{ inputs.path }}
-        OUTPUT=$(./cn ${{ inputs.command }})
+        exec 5>&1
+        OUTPUT=$(./cn ${{ inputs.command }} | tee /dev/fd/5)
         echo "stdout<<nEOFn" >> $GITHUB_OUTPUT
         echo "$OUTPUT" >> $GITHUB_OUTPUT
         echo "nEOFn" >> $GITHUB_OUTPUT
-
