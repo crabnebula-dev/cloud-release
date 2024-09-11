@@ -75,6 +75,7 @@ runs:
         curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/windows-binary-x86_64 --output cn
 
     - uses: actions/cache/save@v4
+      continue-on-error: true
       with:
         path: ${{ inputs.path }}/cn
         key: ${{ steps.restore-cache.outputs.cache-primary-key }}
