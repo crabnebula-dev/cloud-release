@@ -79,8 +79,8 @@ runs:
         CN_API_KEY: ${{ inputs.api-key }}
       working-directory: ${{ inputs.working-directory }}
       run: |
-        : cn ${{ inputs.command }}
-        echo "running `${{ steps.download-cn-cli.outputs.cn-path }}` from '${{ inputs.working-directory }}'"
+        : run cn ${{ inputs.command }}
+        echo "running \"${{ steps.download-cn-cli.outputs.cn-path }}\" from '${{ inputs.working-directory }}'"
         exec 5>&1
         OUTPUT=$(${{ steps.download-cn-cli.outputs.cn-path }} ${{ inputs.command }} | tee >(cat - >&5))
         echo "stdout<<nEOFn" >> $GITHUB_OUTPUT
