@@ -33,7 +33,8 @@ jobs:
       - name: echo outputs
         run: echo '${{ steps.version.outputs.stdout }}'
 
-      - name: get CLI version (cached)
+      - name: get CLI version (different cwd)
         uses: ./
         with:
           command: --version
+          working-directory: .changes
