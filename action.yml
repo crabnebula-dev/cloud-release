@@ -24,15 +24,15 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: Get current date
-      shell: bash
-      run: echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
-      if: runner.os == 'Linux' || runner.os == 'macOS'
+#    - name: Get current date
+#      shell: bash
+#      run: echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+#      if: runner.os == 'Linux' || runner.os == 'macOS'
 
-    - name: Get current date
-      shell: pwsh
-      if: runner.os == 'Windows'
-      run: echo "CURRENT_DATE=$(Get-Date -Format "yyyy-MM-dd")" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+#    - name: Get current date
+#      shell: pwsh
+#      if: runner.os == 'Windows'
+#      run: echo "CURRENT_DATE=$(Get-Date -Format "yyyy-MM-dd")" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
 #    - name: Cache CLI
 #      id: restore-cache
@@ -44,7 +44,7 @@ runs:
     - name: Download CLI (Linux)
       id: download-cn-cli
       shell: bash
-      if: steps.restore-cache.outputs.cache-hit != 'true' && runner.os == 'Linux'
+      if: steps.restore-cache.outputs.cache-hit != 'true'
       working-directory: ${{ inputs.path }}
       run: |
         : Download CLI
