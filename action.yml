@@ -42,6 +42,7 @@ runs:
 #        key: ${{ runner.os }}-${{ runner.arch }}-cn-${{ env.CURRENT_DATE }}
 
     - name: Download CLI (Linux)
+      id: download-cn-cli
       shell: bash
       if: steps.restore-cache.outputs.cache-hit != 'true' && runner.os == 'Linux'
       working-directory: ${{ inputs.path }}
@@ -54,8 +55,10 @@ runs:
           curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/linux-binary-aarch64 --output cn
         fi
         chmod +x cn
+        echo "cn-path=$(realpath cn)" >> $GITHUB_OUTPUT
 
     - name: Download CLI (macOS)
+      id: download-cn-cli
       shell: bash
       if: steps.restore-cache.outputs.cache-hit != 'true' && runner.os == 'macOS'
       working-directory: ${{ inputs.path }}
@@ -64,8 +67,10 @@ runs:
         echo "Downloading CLI..."
         curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/darwin-binary-universal --output cn
         chmod +x cn
+        echo "cn-path=$(realpath cn)" >> $GITHUB_OUTPUT
 
     - name: Download CLI (Windows)
+      id: download-cn-cli
       shell: bash
       if: steps.restore-cache.outputs.cache-hit != 'true' && runner.os == 'Windows'
       working-directory: ${{ inputs.path }}
@@ -73,6 +78,7 @@ runs:
         : Download CLI
         echo "Downloading CLI..."
         curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/windows-binary-x86_64 --output cn
+        echo "cn-path=$(realpath cn)" >> $GITHUB_OUTPUT
 
 #    - uses: actions/cache/save@v4
 #      continue-on-error: true
@@ -88,8 +94,9 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: |
         : cn ${{ inputs.command }}
+        echo "running `${{ steps.download-cn-cli.outputs.cn-path }}` from '${{ inputs.working-directory }}'"
         exec 5>&1
-        OUTPUT=$(./"${{ inputs.path }}"/cn ${{ inputs.command }} | tee >(cat - >&5))
+        OUTPUT=$(${{ steps.download-cn-cli.outputs.cn-path }} ${{ inputs.command }} | tee >(cat - >&5))
         echo "stdout<<nEOFn" >> $GITHUB_OUTPUT
         echo "$OUTPUT" >> $GITHUB_OUTPUT
         echo "nEOFn" >> $GITHUB_OUTPUT
