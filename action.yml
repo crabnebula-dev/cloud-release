@@ -49,35 +49,21 @@ runs:
       run: |
         : Download CLI
         echo "Downloading CLI..."
-        if [[ "${{ runner.arch }}" == "X64" ]]; then
-          curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/linux-binary-x86_64 --output cn
+        if [[ "${{ runner.os }}" == "Linux" ]]; then
+          if [[ "${{ runner.arch }}" == "X64" ]]; then
+            curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/linux-binary-x86_64 --output cn
+          else
+            curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/linux-binary-aarch64 --output cn
+          fi
+        elif [[ "${{ runner.os }}" == "macOS" ]]; then
+          curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/darwin-binary-universal --output cn
+        elif [[ "${{ runner.os }}" == "Windows" ]]; then
+          curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/windows-binary-x86_64 --output cn
         else
-          curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/linux-binary-aarch64 --output cn
+          echo "unsupported runner ${{ runner.os }}, only Linux, macOS and Windows are supported"
+          exit 1
         fi
         chmod +x cn
-        echo "cn-path=$(realpath cn)" >> $GITHUB_OUTPUT
-
-    - name: Download CLI (macOS)
-      id: download-cn-cli
-      shell: bash
-      if: steps.restore-cache.outputs.cache-hit != 'true' && runner.os == 'macOS'
-      working-directory: ${{ inputs.path }}
-      run: |
-        : Download CLI
-        echo "Downloading CLI..."
-        curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/darwin-binary-universal --output cn
-        chmod +x cn
-        echo "cn-path=$(realpath cn)" >> $GITHUB_OUTPUT
-
-    - name: Download CLI (Windows)
-      id: download-cn-cli
-      shell: bash
-      if: steps.restore-cache.outputs.cache-hit != 'true' && runner.os == 'Windows'
-      working-directory: ${{ inputs.path }}
-      run: |
-        : Download CLI
-        echo "Downloading CLI..."
-        curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/windows-binary-x86_64 --output cn
         echo "cn-path=$(realpath cn)" >> $GITHUB_OUTPUT
 
 #    - uses: actions/cache/save@v4
