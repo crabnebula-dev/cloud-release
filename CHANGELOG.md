@@ -1,5 +1,9 @@
 # Changelog
 
+## \[0.2.5]
+
+- [`5ecb0dc`](https://github.com/crabnebula-dev/cloud-release/commit/5ecb0dcb918517e340d38047ce9830d45d554373) ([#10](https://github.com/crabnebula-dev/cloud-release/pull/10) by [@lucasfernog-crabnebula](https://github.com/crabnebula-dev/cloud-release/../../lucasfernog-crabnebula)) Properly resolve the `cn` path when using the `working-directory` option.
+
 ## \[0.2.4]
 
 - [`88b5427`](https://github.com/crabnebula-dev/cloud-release/commit/88b5427330995c4fe6b7196a07664ab199b1c1a7) Fixed an issue that caused the action to fail if there were multiple concurrent runners with the same OS.
