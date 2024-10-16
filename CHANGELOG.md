@@ -1,5 +1,9 @@
 # Changelog
 
+## \[0.2.6]
+
+- [`70f1904`](https://github.com/crabnebula-dev/cloud-release/commit/70f19045c5c3ffa7262bd5a4461ffb8cc6baa329) Sets a User-Agent when downloading the CLI.
+
 ## \[0.2.5]
 
 - [`5ecb0dc`](https://github.com/crabnebula-dev/cloud-release/commit/5ecb0dcb918517e340d38047ce9830d45d554373) ([#10](https://github.com/crabnebula-dev/cloud-release/pull/10) by [@lucasfernog-crabnebula](https://github.com/crabnebula-dev/cloud-release/../../lucasfernog-crabnebula)) Properly resolve the `cn` path when using the `working-directory` option.
