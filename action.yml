@@ -46,19 +46,30 @@ runs:
       shell: bash
       if: steps.restore-cache.outputs.cache-hit != 'true'
       working-directory: ${{ inputs.path }}
+      env:
+        # Note: be careful about line-breaks for this parameter. Curl will break when they end up being sent as part of the header.
+        USER_AGENT: >-
+          ${{
+            format(
+              'cloud-release{0} ({1}; {2})',
+              github.action_ref && format('/{0}',github.action_ref),
+              runner.os,
+              runner.arch
+            )
+          }}
       run: |
         : Download CLI
         echo "Downloading CLI..."
         if [[ "${{ runner.os }}" == "Linux" ]]; then
           if [[ "${{ runner.arch }}" == "X64" ]]; then
-            curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/linux-binary-x86_64 --output cn
+            curl -A "$USER_AGENT" -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/linux-binary-x86_64 --output cn
           else
-            curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/linux-binary-aarch64 --output cn
+            curl -A "$USER_AGENT" -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/linux-binary-aarch64 --output cn
           fi
         elif [[ "${{ runner.os }}" == "macOS" ]]; then
-          curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/darwin-binary-universal --output cn
+          curl -A "$USER_AGENT" -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/darwin-binary-universal --output cn
         elif [[ "${{ runner.os }}" == "Windows" ]]; then
-          curl -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/windows-binary-x86_64 --output cn
+          curl -A "$USER_AGENT" -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/windows-binary-x86_64 --output cn
         else
           echo "unsupported runner ${{ runner.os }}, only Linux, macOS and Windows are supported"
           exit 1
