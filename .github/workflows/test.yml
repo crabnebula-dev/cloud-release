@@ -31,7 +31,22 @@ jobs:
           command: --version
 
       - name: echo outputs
-        run: echo '${{ steps.version.outputs.stdout }}'
+        shell: bash
+        run: |
+          echo '=== STDOUT ==='
+          echo "${{ steps.version.outputs.stdout }}"
+          echo '━━━━━━━━━━━━━・'
+
+      - name: echo release output (from GITHUB_OUTPUT)
+        shell: bash
+        run: |
+          echo '=== RELEASE (steps.version.outputs.release):'
+          if [ -n "${{ steps.version.outputs.release }}" ]; then
+            echo "${{ steps.version.outputs.release }}"
+            echo '━━━━━━━━━━━━━・'
+          else
+            echo '(no release output found)'
+          fi
 
       - name: get CLI version (different cwd)
         uses: ./

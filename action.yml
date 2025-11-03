@@ -91,9 +91,24 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: |
         : run cn ${{ inputs.command }}
-        echo "running \"${{ steps.download-cn-cli.outputs.cn-path }}\" from '${{ inputs.working-directory }}'"
-        exec 5>&1
-        OUTPUT=$(${{ steps.download-cn-cli.outputs.cn-path }} ${{ inputs.command }} | tee >(cat - >&5))
-        echo "stdout<<nEOFn" >> $GITHUB_OUTPUT
-        echo "$OUTPUT" >> $GITHUB_OUTPUT
-        echo "nEOFn" >> $GITHUB_OUTPUT
+        echo "Running command from '${{ inputs.working-directory }}'"
+        
+        # Run the command and capture output
+        # redirects file descriptor 2 (stderr) 
+        # to the same location as file descriptor 1 (stdout)
+        set +e
+        OUTPUT=$("${{ steps.download-cn-cli.outputs.cn-path }}" ${{ inputs.command }} 2>&1)
+        EXIT_CODE=$?
+        set -e
+        
+        # Display the output
+        echo "$OUTPUT"
+        
+        # Save output to GITHUB_OUTPUT
+        # Using timestamp and process ID as delimiter to avoid collisions
+        EOF="EOF_$(date +%s)_$$"  
+        echo "stdout<<$EOF" >> "$GITHUB_OUTPUT"
+        echo "$OUTPUT" >> "$GITHUB_OUTPUT"
+        echo "$EOF" >> "$GITHUB_OUTPUT"
+        
+        exit $EXIT_CODE
