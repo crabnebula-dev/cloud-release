@@ -62,14 +62,14 @@ runs:
         echo "Downloading CLI..."
         if [[ "${{ runner.os }}" == "Linux" ]]; then
           if [[ "${{ runner.arch }}" == "X64" ]]; then
-            curl -A "$USER_AGENT" -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/linux-binary-x86_64 --output cn
+            curl -A "$USER_AGENT" -L https://cdn.crabnebula.app/download/crabnebula/test-cn-cli/latest/platform/linux-binary-x86_64 --output cn
           else
-            curl -A "$USER_AGENT" -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/linux-binary-aarch64 --output cn
+            curl -A "$USER_AGENT" -L https://cdn.crabnebula.app/download/crabnebula/test-cn-cli/latest/platform/linux-binary-aarch64 --output cn
           fi
         elif [[ "${{ runner.os }}" == "macOS" ]]; then
-          curl -A "$USER_AGENT" -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/darwin-binary-universal --output cn
+          curl -A "$USER_AGENT" -L https://cdn.crabnebula.app/download/crabnebula/test-cn-cli/latest/platform/darwin-binary-universal --output cn
         elif [[ "${{ runner.os }}" == "Windows" ]]; then
-          curl -A "$USER_AGENT" -L https://cdn.crabnebula.app/download/crabnebula/cn-cli/latest/platform/windows-binary-x86_64 --output cn
+          curl -A "$USER_AGENT" -L https://cdn.crabnebula.app/download/crabnebula/test-cn-cli/latest/platform/windows-binary-x86_64 --output cn
         else
           echo "unsupported runner ${{ runner.os }}, only Linux, macOS and Windows are supported"
           exit 1
