@@ -1,5 +1,10 @@
+# Version: 0.0.1+test
+# Last updated: 2025-11-11
+# Changelog: Fixed output formatting to use simpler one line JSON format
+
 name: 'cn-cloud-release'
 description: 'CrabNebula Cloud Release GitHub Action'
+
 inputs:
   command:
     description: 'The command to execute using the CrabNebula Cloud CLI'
@@ -40,11 +45,12 @@ runs:
 #      with:
 #        path: ${{ inputs.path }}/cn
 #        key: ${{ runner.os }}-${{ runner.arch }}-cn-${{ env.CURRENT_DATE }}
+#       ---> see bypassed condition below
 
-    - name: Download CLI (Linux)
+    - name: Download CLI
       id: download-cn-cli
       shell: bash
-      if: steps.restore-cache.outputs.cache-hit != 'true'
+      #  if: steps.restore-cache.outputs.cache-hit != 'true'  <--- bypassed condition
       working-directory: ${{ inputs.path }}
       env:
         # Note: be careful about line-breaks for this parameter. Curl will break when they end up being sent as part of the header.
@@ -102,13 +108,9 @@ runs:
         set -e
         
         # Display the output
-        echo "$OUTPUT"
+        echo "Release info: $OUTPUT"
         
         # Save output to GITHUB_OUTPUT
-        # Using timestamp and process ID as delimiter to avoid collisions
-        EOF="EOF_$(date +%s)_$$"  
-        echo "stdout<<$EOF" >> "$GITHUB_OUTPUT"
-        echo "$OUTPUT" >> "$GITHUB_OUTPUT"
-        echo "$EOF" >> "$GITHUB_OUTPUT"
+        echo "stdout=$OUTPUT" >> "$GITHUB_OUTPUT"
         
         exit $EXIT_CODE
