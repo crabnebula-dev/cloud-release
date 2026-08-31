@@ -12,6 +12,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   draft:
     strategy:
@@ -22,19 +25,23 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: get CLI version
-        uses: ./
+        uses: $/
         id: version
         with:
           command: --version
 
       - name: echo outputs
-        run: echo '${{ steps.version.outputs.stdout }}'
+        run: echo "${CLI_OUTPUT}"
+        env:
+          CLI_OUTPUT: ${{ steps.version.outputs.stdout }}
 
       - name: get CLI version (different cwd)
-        uses: ./
+        uses: $/
         with:
           command: --version
           working-directory: .changes
