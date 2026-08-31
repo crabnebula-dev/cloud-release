@@ -1,4 +1,4 @@
-name: Test Action
+name: Test
 
 on:
   pull_request:
@@ -16,7 +16,7 @@ permissions:
   contents: read
 
 jobs:
-  draft:
+  cli-version:
     strategy:
       fail-fast: false
       matrix:
